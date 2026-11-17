@@ -1,0 +1,2873 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="text-scale" content="scale" />
+    <meta name="theme-color" content="#15803d" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta
+      name="description"
+      content="Aplikasi Timbangan TBS Kelapa Sawit Mobile-Pembelian Petani, Penjualan PKS, Kasbon & Laporan Laba Rugi"
+    />
+    <title>SawitScale Pro—Aplikasi Timbangan TBS Mobile</title>
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg?v=21" />
+    <link rel="apple-touch-icon" href="/icon.svg?v=21" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <!-- ===================================================================== -->
+    <!-- LOGIN SCREEN (SUPERADMIN / ADMIN / KASIR)                             -->
+    <!-- ===================================================================== -->
+    <section
+      id="auth-screen"
+      class="auth-screen no-print"
+      aria-labelledby="login-heading"
+    >
+      <div class="auth-card card">
+        <div class="auth-brand">
+          <img
+            src="/icon.svg?v=21"
+            alt=""
+            width="68"
+            height="42"
+            class="brand-logo"
+            aria-hidden="true"
+          />
+          <div>
+            <h1 id="login-heading" class="auth-title">TBSscale Pro</h1>
+            <p class="auth-subtitle">Sistem Timbangan TBS Kelapa Sawit</p>
+          </div>
+        </div>
+
+        <form
+          id="form-login"
+          action="#login"
+          method="POST"
+          aria-labelledby="login-heading"
+          novalidate
+        >
+          <div class="form-group">
+            <label for="login-username"
+              >Username <span aria-hidden="true" class="req">*</span></label
+            >
+            <input
+              type="text"
+              id="login-username"
+              name="username"
+              autocomplete="username"
+              autocorrect="off"
+              autocapitalize="none"
+              spellcheck="false"
+              enterkeyhint="next"
+              required
+              placeholder="Contoh: superadmin, admin, atau kasir"
+            />
+          </div>
+
+          <div class="form-group">
+            <div class="label-with-action">
+              <label for="login-password"
+                >Password <span aria-hidden="true" class="req">*</span></label
+              >
+              <button
+                id="btn-toggle-login-password"
+                type="button"
+                class="btn-link"
+                aria-pressed="false"
+                aria-label="Tampilkan kata sandi"
+                aria-describedby="toggle-password-warning"
+              >
+                Lihat Password
+              </button>
+              <span id="toggle-password-warning" class="visually-hidden"
+                >Peringatan: ini akan menampilkan kata sandi Anda di
+                layar.</span
+              >
+            </div>
+            <input
+              type="password"
+              id="login-password"
+              name="password"
+              autocomplete="current-password"
+              enterkeyhint="done"
+              required
+              placeholder="Masukkan password"
+            />
+          </div>
+
+          <div
+            id="login-error-banner"
+            role="alert"
+            class="form-error-banner"
+            hidden
+          ></div>
+
+          <div class="form-actions">
+            <button
+              type="submit"
+              id="btn-submit-login"
+              class="btn btn-primary btn-lg"
+            >
+              Masuk Aplikasi
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Header App Bar (Visible on screen, hidden when printing thermal receipt) -->
+    <header id="app-header" class="app-header no-print" hidden>
+      <div class="header-brand">
+        <img
+          src="/icon.svg?v=21"
+          alt=""
+          width="56"
+          height="36"
+          class="brand-logo"
+          aria-hidden="true"
+        />
+        <div class="brand-text">
+          <h1 id="ram-header-name">RAM SAWIT MAKMUR JAYA</h1>
+          <p class="header-subtitle">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span id="header-price-badge">Harga TBS: Rp 2.650/kg</span>
+            <span aria-hidden="true">•</span>
+            <span id="header-date-badge">Siap Timbang</span>
+          </p>
+        </div>
+      </div>
+      <div class="header-actions toolbar">
+        <div id="header-user-badge" class="user-session-badge">
+          <span id="header-user-role" class="role-pill role-superadmin"
+            >SUPERADMIN</span
+          >
+          <span id="header-user-name">Owner</span>
+        </div>
+        <button
+          type="button"
+          id="btn-header-sync"
+          class="btn btn-outline-light btn-sm btn-sync-header"
+          aria-label="Sinkronisasi Data Mobile APK & Desktop"
+        >
+          <span id="header-sync-dot" class="sync-dot" aria-hidden="true"></span>
+          <span id="header-sync-label">Sinkron</span>
+        </button>
+        <button
+          type="button"
+          id="btn-quick-price"
+          class="btn btn-outline-light btn-sm"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width="18"
+            height="18"
+            aria-hidden="true"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"
+            />
+          </svg>
+          <span>Pengaturan</span>
+        </button>
+        <button
+          type="button"
+          id="btn-logout"
+          class="btn btn-outline-light btn-sm"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width="18"
+            height="18"
+            aria-hidden="true"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"
+            />
+          </svg>
+          <span>Keluar</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Live status announcer for screen readers & install feedback -->
+    <div
+      id="install-status"
+      role="status"
+      aria-live="polite"
+      class="visually-hidden"
+    ></div>
+    <div
+      id="toast-container"
+      role="status"
+      aria-live="polite"
+      class="toast-container no-print"
+    ></div>
+
+    <main id="app-main" class="app-main no-print" hidden>
+      <!-- Slot for Digital Scale Indicator Panel when shown on Weighing Tabs -->
+      <div id="scale-panel-main-slot"></div>
+
+      <!-- =================================================================== -->
+      <!-- VIEW 1: TIMBANG BELI (PEMBELIAN TBS DARI PETANI/SUPPLIER)         -->
+      <!-- =================================================================== -->
+      <section
+        id="view-beli"
+        class="view-section"
+        aria-labelledby="view-beli-heading"
+      >
+        <div class="section-heading-bar">
+          <div>
+            <h2 id="view-beli-heading">Timbang Masuk—Pembelian TBS Petani</h2>
+            <p class="section-desc">
+              Catat pembelian TBS kelapa sawit dari petani/pemasok dengan
+              potongan sortasi & kasbon otomatis.
+            </p>
+          </div>
+          <span id="beli-ticket-preview" class="ticket-badge">TBS-IN-001</span>
+        </div>
+
+        <!-- Antrean Truk di Dalam RAM (Timbang 1 / Belum Timbang Tara) -->
+        <section
+          id="pending-trucks-card"
+          class="card pending-card"
+          aria-labelledby="pending-trucks-heading"
+          hidden
+        >
+          <div class="card-header-inline">
+            <h3 id="pending-trucks-heading">
+              <span class="pulse-dot" aria-hidden="true"></span>
+              Antrean Truk di Dalam RAM (Menunggu Timbang Tara)
+            </h3>
+            <span id="pending-trucks-count" class="badge badge-warning"
+              >0 Truk</span
+            >
+          </div>
+          <div id="pending-trucks-list" class="pending-list"></div>
+        </section>
+
+        <form
+          id="form-pembelian"
+          action="#beli"
+          method="POST"
+          aria-labelledby="view-beli-heading"
+          class="card form-card"
+          novalidate
+        >
+          <input type="hidden" id="beli-pending-id" name="pendingId" value="" />
+
+          <fieldset class="form-fieldset">
+            <legend>1. Data Petani/Pemasok & Kendaraan</legend>
+
+            <div class="form-group">
+              <div class="label-with-action">
+                <label for="beli-farmer"
+                  >Nama Petani/Pemasok
+                  <span aria-hidden="true" class="req">*</span></label
+                >
+                <button
+                  type="button"
+                  id="btn-add-farmer-quick"
+                  class="btn-link"
+                >
+                  + Tambah Petani Baru
+                </button>
+              </div>
+              <select id="beli-farmer" name="farmerId" required>
+                <option value="">-- Pilih Petani/Pemasok --</option>
+              </select>
+              <div id="beli-farmer-info" class="partner-info-banner" hidden>
+                <span id="beli-farmer-tier">Harga: Rp 2.650/kg</span>
+                <span id="beli-farmer-loan-badge" class="badge badge-loan"
+                  >Kasbon: Rp 0</span
+                >
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="beli-plate"
+                  >Nomor Polisi (Plat)
+                  <span aria-hidden="true" class="req">*</span></label
+                >
+                <input
+                  type="text"
+                  id="beli-plate"
+                  name="plate"
+                  required
+                  placeholder="Contoh: BM 8421 QA"
+                  autocorrect="off"
+                  autocapitalize="characters"
+                  spellcheck="false"
+                  enterkeyhint="next"
+                />
+              </div>
+              <div class="form-group">
+                <label for="beli-driver">Nama Sopir</label>
+                <input
+                  type="text"
+                  id="beli-driver"
+                  name="driver"
+                  placeholder="Contoh: Pak Hendra"
+                  autocomplete="name"
+                  enterkeyhint="next"
+                />
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="form-fieldset">
+            <legend>2. Berat Timbangan & Sortasi (Kg)</legend>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="beli-bruto"
+                  >Berat Bruto/Kotor (kg)
+                  <span aria-hidden="true" class="req">*</span></label
+                >
+                <input
+                  type="text"
+                  id="beli-bruto"
+                  name="bruto"
+                  inputmode="numeric"
+                  pattern="[0-9.,]+"
+                  required
+                  placeholder="0"
+                  enterkeyhint="next"
+                  class="input-weight"
+                />
+                <span class="field-hint">Berat kendaraan+muatan TBS</span>
+              </div>
+              <div class="form-group">
+                <label for="beli-tara"
+                  >Berat Tara/Kosong (kg)
+                  <span aria-hidden="true" class="req">*</span></label
+                >
+                <input
+                  type="text"
+                  id="beli-tara"
+                  name="tara"
+                  inputmode="numeric"
+                  pattern="[0-9.,]+"
+                  required
+                  placeholder="0"
+                  enterkeyhint="next"
+                  class="input-weight"
+                />
+                <span class="field-hint">Berat kendaraan kosong</span>
+              </div>
+            </div>
+
+            <div class="calc-strip">
+              <div class="calc-item">
+                <span class="calc-label">Netto 1 (Bruto-Tara)</span>
+                <strong id="beli-netto1-display" class="calc-val">0 kg</strong>
+              </div>
+              <div class="calc-item">
+                <span class="calc-label">Total Potongan Sortasi</span>
+                <strong id="beli-cut-total-display" class="calc-val text-danger"
+                  >- 0 kg</strong
+                >
+              </div>
+              <div class="calc-item calc-item-highlight">
+                <span class="calc-label">Berat Bersih</span>
+                <strong
+                  id="beli-netto-clean-display"
+                  class="calc-val text-success"
+                  >0 kg</strong
+                >
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="beli-cut-percent">Potongan Wajib/Sortasi (%)</label>
+                <input
+                  type="text"
+                  id="beli-cut-percent"
+                  name="cutPercent"
+                  inputmode="decimal"
+                  value="4"
+                  enterkeyhint="next"
+                />
+                <span class="field-hint">Air, sampah, buah mentah (%)</span>
+              </div>
+              <div class="form-group">
+                <label for="beli-cut-kg">Potongan Tambahan/Tangkai (kg)</label>
+                <input
+                  type="text"
+                  id="beli-cut-kg"
+                  name="cutKg"
+                  inputmode="numeric"
+                  value="0"
+                  enterkeyhint="next"
+                />
+                <span class="field-hint">Potongan langsung dalam kg</span>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="form-fieldset">
+            <legend>3. Harga, Bongkar & Potong Kasbon (Rp)</legend>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="beli-price"
+                  >Harga Beli TBS (Rp/kg)
+                  <span aria-hidden="true" class="req">*</span></label
+                >
+                <input
+                  type="text"
+                  id="beli-price"
+                  name="pricePerKg"
+                  inputmode="numeric"
+                  required
+                  placeholder="2650"
+                  enterkeyhint="next"
+                  class="input-currency"
+                />
+              </div>
+              <div class="form-group">
+                <label for="beli-unloading-rate">Biaya Bongkar (Rp/kg)</label>
+                <input
+                  type="text"
+                  id="beli-unloading-rate"
+                  name="unloadingRate"
+                  inputmode="numeric"
+                  value="15"
+                  enterkeyhint="next"
+                />
+                <span id="beli-unloading-total-hint" class="field-hint"
+                  >Total bongkar: Rp 0</span
+                >
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="label-with-action">
+                <label for="beli-loan-deduct"
+                  >Potong Kasbon/Pinjaman Petani (Rp)</label
+                >
+                <button type="button" id="btn-max-loan-deduct" class="btn-link">
+                  Potong Maksimal Kasbon
+                </button>
+              </div>
+              <input
+                type="text"
+                id="beli-loan-deduct"
+                name="loanDeduct"
+                inputmode="numeric"
+                value="0"
+                enterkeyhint="next"
+              />
+              <span id="beli-loan-remaining-hint" class="field-hint"
+                >Sisa kasbon setelah potong: Rp 0</span
+              >
+            </div>
+
+            <fieldset class="radio-fieldset">
+              <legend>Metode Pembayaran</legend>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="Tunai"
+                    checked
+                  />
+                  <span>Tunai/Cash</span>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="paymentMethod" value="Transfer" />
+                  <span>Transfer Bank</span>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="paymentMethod" value="Pending" />
+                  <span>Pending/Tunda</span>
+                </label>
+              </div>
+            </fieldset>
+
+            <div class="form-group">
+              <label for="beli-notes">Catatan Sortasi/Keterangan Buah</label>
+              <input
+                type="text"
+                id="beli-notes"
+                name="notes"
+                placeholder="Contoh: Buah bagus, brondolan bersih"
+                enterkeyhint="done"
+              />
+            </div>
+          </fieldset>
+
+          <!-- Ringkasan Pembayaran Live -->
+          <div class="summary-receipt-box" aria-live="polite">
+            <div class="summary-line">
+              <span
+                >Subtotal Kotor (<span id="sum-beli-netto">0 kg</span> ×
+                <span id="sum-beli-price">Rp 0</span>)</span
+              >
+              <strong id="sum-beli-gross">Rp 0</strong>
+            </div>
+            <div class="summary-line text-muted">
+              <span>Potongan Bongkar</span>
+              <span id="sum-beli-unloading">- Rp 0</span>
+            </div>
+            <div class="summary-line text-muted">
+              <span>Potongan Kasbon Petani</span>
+              <span id="sum-beli-loan">- Rp 0</span>
+            </div>
+            <div class="summary-line summary-total">
+              <span>Total Bersih Dibayar</span>
+              <strong id="sum-beli-net-pay">Rp 0</strong>
+            </div>
+          </div>
+
+          <div
+            id="beli-form-error"
+            role="alert"
+            class="form-error-banner"
+            hidden
+          ></div>
+
+          <div class="form-actions">
+            <button
+              type="submit"
+              id="btn-submit-beli"
+              class="btn btn-primary btn-lg"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                aria-hidden="true"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"
+                />
+              </svg>
+              <span>Simpan Pembelian & Cetak Struk</span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- VIEW 2: TIMBANG JUAL (PENJUALAN / PENGIRIMAN DO KE PABRIK PKS)      -->
+      <!-- =================================================================== -->
+      <section
+        id="view-jual"
+        class="view-section"
+        aria-labelledby="view-jual-heading"
+        hidden
+      >
+        <div class="section-heading-bar">
+          <div>
+            <h2 id="view-jual-heading">
+              Timbang Keluar — Penjualan TBS ke Pabrik (PKS)
+            </h2>
+            <p class="section-desc">
+              Catat pengiriman DO ke Pabrik Kelapa Sawit (PKS), refraksi pabrik,
+              dan ongkos angkut ekspedisi.
+            </p>
+          </div>
+          <span id="jual-ticket-preview" class="ticket-badge ticket-badge-sale"
+            >TBS-OUT-001</span
+          >
+        </div>
+
+        <form
+          id="form-penjualan"
+          action="#jual"
+          method="POST"
+          aria-labelledby="view-jual-heading"
+          class="card form-card"
+          novalidate
+        >
+          <fieldset class="form-fieldset">
+            <legend>1. Tujuan Pabrik (PKS) & Kendaraan Pengangkut</legend>
+
+            <div class="form-group">
+              <div class="label-with-action">
+                <label for="jual-mill"
+                  >Pabrik Kelapa Sawit (PKS) Tujuan
+                  <span aria-hidden="true" class="req">*</span></label
+                >
+                <button type="button" id="btn-add-mill-quick" class="btn-link">
+                  + Tambah PKS Baru
+                </button>
+              </div>
+              <select id="jual-mill" name="millId" required>
+                <option value="">-- Pilih Pabrik/PKS --</option>
+              </select>
+            </div>
+
+            <div class="form-row-3">
+              <div class="form-group">
+                <label for="jual-do-number"
+                  >Nomor DO/SPB
+                  <span aria-hidden="true" class="req">*</span></label
+                >
+                <input
+                  type="text"
+                  id="jual-do-number"
+                  name="doNumber"
+                  required
+                  placeholder="DO-PKS/11/042"
+                  autocorrect="off"
+                  spellcheck="false"
+                  enterkeyhint="next"
+                />
+              </div>
+              <div class="form-group">
+                <label for="jual-plate"
+                  >Plat Nomor Truk
+                  <span aria-hidden="true" class="req">*</span></label
+                >
+                <input
+                  type="text"
+                  id="jual-plate"
+                  name="plate"
+                  required
+                  placeholder="BM 9102 QU"
+                  autocorrect="off"
+                  autocapitalize="characters"
+                  spellcheck="false"
+                  enterkeyhint="next"
+                />
+              </div>
+              <div class="form-group">
+                <label for="jual-driver">Nama Sopir Ekspedisi</label>
+                <input
+                  type="text"
+                  id="jual-driver"
+                  name="driver"
+                  placeholder="Pak Rudi"
+                  enterkeyhint="next"
+                />
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="form-fieldset">
+            <legend>2. Tonase Pengiriman & Refraksi Pabrik (Kg)</legend>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="jual-bruto"
+                  >Berat Bruto (kg)
+                  <span aria-hidden="true" class="req">*</span></label
+                >
+                <input
+                  type="text"
+                  id="jual-bruto"
+                  name="bruto"
+                  inputmode="numeric"
+                  required
+                  placeholder="0"
+                  enterkeyhint="next"
+                  class="input-weight"
+                />
+              </div>
+              <div class="form-group">
+                <label for="jual-tara"
+                  >Berat Tara (kg)
+                  <span aria-hidden="true" class="req">*</span></label
+                >
+                <input
+                  type="text"
+                  id="jual-tara"
+                  name="tara"
+                  inputmode="numeric"
+                  required
+                  placeholder="0"
+                  enterkeyhint="next"
+                  class="input-weight"
+                />
+              </div>
+            </div>
+
+            <div class="calc-strip">
+              <div class="calc-item">
+                <span class="calc-label">Netto Timbang</span>
+                <strong id="jual-netto1-display" class="calc-val">0 kg</strong>
+              </div>
+              <div class="calc-item">
+                <span class="calc-label">Refraksi/Sortasi PKS</span>
+                <strong id="jual-cut-total-display" class="calc-val text-danger"
+                  >- 0 kg</strong
+                >
+              </div>
+              <div class="calc-item calc-item-highlight">
+                <span class="calc-label">NETTO DITERIMA PKS</span>
+                <strong
+                  id="jual-netto-clean-display"
+                  class="calc-val text-success"
+                  >0 kg</strong
+                >
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="jual-cut-percent">Refraksi/Potongan PKS (%)</label>
+                <input
+                  type="text"
+                  id="jual-cut-percent"
+                  name="cutPercent"
+                  inputmode="decimal"
+                  value="3.5"
+                  enterkeyhint="next"
+                />
+              </div>
+              <div class="form-group">
+                <label for="jual-cut-kg">Pulangan/Potongan Lain (kg)</label>
+                <input
+                  type="text"
+                  id="jual-cut-kg"
+                  name="cutKg"
+                  inputmode="numeric"
+                  value="0"
+                  enterkeyhint="next"
+                />
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="form-fieldset">
+            <legend>3. Harga DO Pabrik & Biaya Pengiriman (Rp)</legend>
+
+            <div class="form-row-3">
+              <div class="form-group">
+                <label for="jual-price"
+                  >Harga DO PKS (Rp/kg)
+                  <span aria-hidden="true" class="req">*</span></label
+                >
+                <input
+                  type="text"
+                  id="jual-price"
+                  name="pricePerKg"
+                  inputmode="numeric"
+                  required
+                  placeholder="2920"
+                  enterkeyhint="next"
+                  class="input-currency"
+                />
+              </div>
+              <div class="form-group">
+                <label for="jual-freight-cost">Ongkos Angkut/Truk (Rp)</label>
+                <input
+                  type="text"
+                  id="jual-freight-cost"
+                  name="freightCost"
+                  inputmode="numeric"
+                  value="650000"
+                  enterkeyhint="next"
+                />
+                <span class="field-hint">Biaya ekspedisi/solar</span>
+              </div>
+              <div class="form-group">
+                <label for="jual-loading-cost">Upah Muat/Loader (Rp)</label>
+                <input
+                  type="text"
+                  id="jual-loading-cost"
+                  name="loadingCost"
+                  inputmode="numeric"
+                  value="180000"
+                  enterkeyhint="next"
+                />
+                <span class="field-hint">Biaya muat di RAM</span>
+              </div>
+            </div>
+
+            <fieldset class="radio-fieldset">
+              <legend>Status Pembayaran DO</legend>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" name="saleStatus" value="Lunas" checked />
+                  <span>Lunas/Cair</span>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="saleStatus" value="Piutang DO" />
+                  <span>Piutang DO (Menunggu Cair)</span>
+                </label>
+              </div>
+            </fieldset>
+
+            <div class="form-group">
+              <label for="jual-notes">Catatan Pengiriman PKS</label>
+              <input
+                type="text"
+                id="jual-notes"
+                name="notes"
+                placeholder="Contoh: Pengiriman shift pagi, segel lengkap"
+                enterkeyhint="done"
+              />
+            </div>
+          </fieldset>
+
+          <div
+            class="summary-receipt-box summary-receipt-sale"
+            aria-live="polite"
+          >
+            <div class="summary-line">
+              <span
+                >Nilai Kotor DO (<span id="sum-jual-netto">0 kg</span> ×
+                <span id="sum-jual-price">Rp 0</span>)</span
+              >
+              <strong id="sum-jual-gross">Rp 0</strong>
+            </div>
+            <div class="summary-line text-muted">
+              <span>Biaya Angkut Ekspedisi & Upah Muat</span>
+              <span id="sum-jual-expenses">- Rp 0</span>
+            </div>
+            <div class="summary-line summary-total">
+              <span>HASIL BERSIH PENJUALAN PKS</span>
+              <strong id="sum-jual-net-receive">Rp 0</strong>
+            </div>
+          </div>
+
+          <div
+            id="jual-form-error"
+            role="alert"
+            class="form-error-banner"
+            hidden
+          ></div>
+
+          <div class="form-actions">
+            <button
+              type="submit"
+              id="btn-submit-jual"
+              class="btn btn-primary btn-lg"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                aria-hidden="true"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+              <span>Simpan Penjualan PKS & Cetak Nota DO</span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- VIEW 3: LAPORAN PEMBELIAN, PENJUALAN, SUSUT & LABA RUGI             -->
+      <!-- =================================================================== -->
+      <section
+        id="view-laporan"
+        class="view-section"
+        aria-labelledby="view-laporan-heading"
+        hidden
+      >
+        <div class="section-heading-bar">
+          <div>
+            <h2 id="view-laporan-heading">
+              Laporan Pembelian, Penjualan & Laba Rugi
+            </h2>
+            <p class="section-desc">
+              Rekapitulasi transaksi pembelian petani, pengiriman DO pabrik,
+              susut tonase RAM, dan analisa keuntungan.
+            </p>
+          </div>
+          <div class="toolbar">
+            <button
+              type="button"
+              id="btn-export-beli-csv"
+              class="btn btn-secondary btn-sm"
+            >
+              Export CSV Pembelian
+            </button>
+            <button
+              type="button"
+              id="btn-export-jual-csv"
+              class="btn btn-secondary btn-sm"
+            >
+              Export CSV Penjualan
+            </button>
+            <button
+              type="button"
+              id="btn-print-report"
+              class="btn btn-primary btn-sm"
+            >
+              Cetak / PDF Laporan
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter & Search Form wrapped in <search> -->
+        <search class="card filter-card">
+          <form
+            id="form-filter-laporan"
+            action="#laporan"
+            method="GET"
+            aria-label="Filter laporan transaksi"
+          >
+            <div class="quick-period-bar toolbar">
+              <button
+                type="button"
+                class="btn btn-chip active"
+                data-period="all"
+              >
+                Semua Waktu
+              </button>
+              <button type="button" class="btn btn-chip" data-period="today">
+                Hari Ini
+              </button>
+              <button type="button" class="btn btn-chip" data-period="7days">
+                7 Hari Terakhir
+              </button>
+              <button type="button" class="btn btn-chip" data-period="month">
+                Bulan Ini
+              </button>
+            </div>
+            <div class="form-row-4">
+              <div class="form-group">
+                <label for="filter-start-date">Dari Tanggal</label>
+                <input type="date" id="filter-start-date" name="startDate" />
+              </div>
+              <div class="form-group">
+                <label for="filter-end-date">Sampai Tanggal</label>
+                <input type="date" id="filter-end-date" name="endDate" />
+              </div>
+              <div class="form-group">
+                <label for="filter-partner">Filter Petani/PKS</label>
+                <select id="filter-partner" name="partner">
+                  <option value="ALL">Semua Petani & Pabrik</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="filter-keyword">Cari Tiket/Plat/Nama</label>
+                <input
+                  type="search"
+                  id="filter-keyword"
+                  name="q"
+                  placeholder="Ketik nomor tiket, plat, sopir..."
+                  autocorrect="off"
+                  spellcheck="false"
+                  enterkeyhint="search"
+                />
+              </div>
+            </div>
+            <div class="filter-actions toolbar">
+              <button type="submit" class="btn btn-primary btn-sm">
+                Terapkan Filter
+              </button>
+              <button
+                type="button"
+                id="btn-reset-filter"
+                class="btn btn-ghost btn-sm"
+              >
+                Reset Filter
+              </button>
+            </div>
+          </form>
+        </search>
+
+        <!-- 4 Executive KPI Cards -->
+        <div class="kpi-grid">
+          <article class="card kpi-card kpi-buy">
+            <div class="kpi-header">
+              <span class="kpi-tag">PEMBELIAN TBS (MASUK)</span>
+              <span id="kpi-buy-count" class="badge">0 Transaksi</span>
+            </div>
+            <strong id="kpi-buy-tonnage" class="kpi-main-val">0 kg</strong>
+            <div class="kpi-sub-lines">
+              <div class="kpi-line">
+                <span>Total Beli Kotor:</span>
+                <strong id="kpi-buy-gross-rp">Rp 0</strong>
+              </div>
+              <div class="kpi-line">
+                <span>Kasbon Terpotong:</span>
+                <strong id="kpi-buy-loan-rp">Rp 0</strong>
+              </div>
+              <div class="kpi-line">
+                <span>Rata-rata Harga Beli:</span>
+                <strong id="kpi-buy-avg-price">Rp 0 /kg</strong>
+              </div>
+            </div>
+          </article>
+
+          <article class="card kpi-card kpi-sell">
+            <div class="kpi-header">
+              <span class="kpi-tag">PENJUALAN PKS (KELUAR)</span>
+              <span id="kpi-sell-count" class="badge">0 DO</span>
+            </div>
+            <strong id="kpi-sell-tonnage" class="kpi-main-val">0 kg</strong>
+            <div class="kpi-sub-lines">
+              <div class="kpi-line">
+                <span>Hasil Bersih PKS:</span>
+                <strong id="kpi-sell-net-rp">Rp 0</strong>
+              </div>
+              <div class="kpi-line">
+                <span>Biaya Angkut & Muat:</span>
+                <strong id="kpi-sell-cost-rp">Rp 0</strong>
+              </div>
+              <div class="kpi-line">
+                <span>Rata-rata Harga DO:</span>
+                <strong id="kpi-sell-avg-price">Rp 0 /kg</strong>
+              </div>
+            </div>
+          </article>
+
+          <article class="card kpi-card kpi-stock">
+            <div class="kpi-header">
+              <span class="kpi-tag">STOK LANTAI RAM & SUSUT</span>
+              <span id="kpi-shrink-badge" class="badge">Seimbang</span>
+            </div>
+            <strong id="kpi-stock-diff" class="kpi-main-val">0 kg</strong>
+            <div class="kpi-sub-lines">
+              <div class="kpi-line">
+                <span>Total Potongan Sortasi Beli:</span>
+                <strong id="kpi-buy-cut-kg">0 kg</strong>
+              </div>
+              <div class="kpi-line">
+                <span>Total Refraksi Pabrik:</span>
+                <strong id="kpi-sell-cut-kg">0 kg</strong>
+              </div>
+              <div class="kpi-line">
+                <span>Estimasi Nilai Stok:</span>
+                <strong id="kpi-stock-value">Rp 0</strong>
+              </div>
+            </div>
+          </article>
+
+          <article class="card kpi-card kpi-profit">
+            <div class="kpi-header">
+              <span class="kpi-tag">ESTIMASI LABA/RUGI</span>
+              <span id="kpi-margin-per-kg" class="badge badge-stable"
+                >Spread: Rp 0/kg</span
+              >
+            </div>
+            <strong id="kpi-net-profit" class="kpi-main-val">Rp 0</strong>
+            <div class="kpi-sub-lines">
+              <div class="kpi-line">
+                <span>Penjualan + Nilai Stok:</span>
+                <strong id="kpi-total-revenue">Rp 0</strong>
+              </div>
+              <div class="kpi-line">
+                <span>Modal Pembelian TBS:</span>
+                <strong id="kpi-total-cogs">Rp 0</strong>
+              </div>
+              <div class="kpi-line">
+                <span>Margin Keuntungan:</span>
+                <strong id="kpi-profit-percent">0%</strong>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <!-- Visual Chart Comparison -->
+        <section class="card chart-card" aria-labelledby="chart-title">
+          <div class="card-header-inline">
+            <h3 id="chart-title">
+              Perbandingan Tonase & Nilai Transaksi (Pembelian vs Penjualan)
+            </h3>
+            <span class="text-muted" id="chart-subtitle"
+              >Ringkasan Periode Terpilih</span
+            >
+          </div>
+          <div id="report-chart-container" class="chart-box"></div>
+        </section>
+
+        <!-- Report Sub-Tabs -->
+        <div
+          class="subtab-bar toolbar"
+          role="tablist"
+          aria-label="Jenis Tabel Laporan"
+        >
+          <button
+            type="button"
+            role="tab"
+            aria-selected="true"
+            aria-controls="panel-rep-beli"
+            id="tab-rep-beli"
+            class="btn subtab-btn active"
+          >
+            Laporan Pembelian (<span id="count-tab-beli">0</span>)
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected="false"
+            aria-controls="panel-rep-jual"
+            id="tab-rep-jual"
+            class="btn subtab-btn"
+          >
+            Laporan Penjualan PKS (<span id="count-tab-jual">0</span>)
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected="false"
+            aria-controls="panel-rep-rekap"
+            id="tab-rep-rekap"
+            class="btn subtab-btn"
+          >
+            Rekap Per Petani & Pabrik
+          </button>
+        </div>
+
+        <!-- Sub-Panel 1: Tabel Laporan Pembelian -->
+        <div
+          id="panel-rep-beli"
+          role="tabpanel"
+          aria-labelledby="tab-rep-beli"
+          class="card table-card"
+        >
+          <div
+            tabindex="0"
+            role="region"
+            aria-labelledby="caption-table-beli"
+            class="table-wrapper"
+          >
+            <table class="data-table table-beli">
+              <caption id="caption-table-beli">
+                Daftar Transaksi Pembelian TBS dari Petani/Pemasok
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">No. Tiket & Waktu</th>
+                  <th scope="col">Petani & Plat</th>
+                  <th scope="col">Bruto / Tara</th>
+                  <th scope="col">Potongan</th>
+                  <th scope="col">Netto Bersih</th>
+                  <th scope="col">Harga / kg</th>
+                  <th scope="col">Bongkar & Kasbon</th>
+                  <th scope="col">Total Dibayar</th>
+                  <th scope="col">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-laporan-beli"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Sub-Panel 2: Tabel Laporan Penjualan PKS -->
+        <div
+          id="panel-rep-jual"
+          role="tabpanel"
+          aria-labelledby="tab-rep-jual"
+          class="card table-card"
+          hidden
+        >
+          <div
+            tabindex="0"
+            role="region"
+            aria-labelledby="caption-table-jual"
+            class="table-wrapper"
+          >
+            <table class="data-table table-jual">
+              <caption id="caption-table-jual">
+                Daftar Transaksi Penjualan/Pengiriman DO ke Pabrik (PKS)
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">No. DO & Waktu</th>
+                  <th scope="col">Pabrik PKS & Truk</th>
+                  <th scope="col">Bruto / Tara</th>
+                  <th scope="col">Refraksi PKS</th>
+                  <th scope="col">Netto PKS</th>
+                  <th scope="col">Harga DO</th>
+                  <th scope="col">Angkut & Muat</th>
+                  <th scope="col">Total Bersih PKS</th>
+                  <th scope="col">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-laporan-jual"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Sub-Panel 3: Rekap Per Petani & Per Pabrik -->
+        <div
+          id="panel-rep-rekap"
+          role="tabpanel"
+          aria-labelledby="tab-rep-rekap"
+          class="rekap-grid"
+          hidden
+        >
+          <div class="card table-card">
+            <div
+              tabindex="0"
+              role="region"
+              aria-labelledby="caption-rekap-petani"
+              class="table-wrapper"
+            >
+              <table class="data-table table-rekap-petani">
+                <caption id="caption-rekap-petani">
+                  Rekapitulasi Pembelian Per Petani/Pemasok
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Nama Petani</th>
+                    <th scope="col">Jml Truk</th>
+                    <th scope="col">Total Netto Bersih</th>
+                    <th scope="col">Total Nilai Beli</th>
+                    <th scope="col">Sisa Kasbon</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-rekap-petani"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card table-card">
+            <div
+              tabindex="0"
+              role="region"
+              aria-labelledby="caption-rekap-pabrik"
+              class="table-wrapper"
+            >
+              <table class="data-table table-rekap-pabrik">
+                <caption id="caption-rekap-pabrik">
+                  Rekapitulasi Penjualan Per Pabrik (PKS)
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Nama Pabrik (PKS)</th>
+                    <th scope="col">Jml DO</th>
+                    <th scope="col">Total Netto PKS</th>
+                    <th scope="col">Total Biaya Angkut</th>
+                    <th scope="col">Total Bersih Diterima</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-rekap-pabrik"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- VIEW 4: MASTER DATA MITRA (PETANI, PABRIK PKS & KASBON)             -->
+      <!-- =================================================================== -->
+      <section
+        id="view-mitra"
+        class="view-section"
+        aria-labelledby="view-mitra-heading"
+        hidden
+      >
+        <div class="section-heading-bar">
+          <div>
+            <h2 id="view-mitra-heading">Data Petani, Pabrik PKS & Kasbon</h2>
+            <p class="section-desc">
+              Kelola daftar pemasok TBS, harga spesial petani, saldo pinjaman
+              (kasbon), dan pabrik tujuan.
+            </p>
+          </div>
+          <div class="toolbar">
+            <button
+              type="button"
+              id="btn-open-farmer-modal"
+              class="btn btn-primary btn-sm"
+            >
+              + Petani Baru
+            </button>
+            <button
+              type="button"
+              id="btn-open-loan-modal"
+              class="btn btn-secondary btn-sm"
+            >
+              + Catat Kasbon/Bayar
+            </button>
+            <button
+              type="button"
+              id="btn-open-mill-modal"
+              class="btn btn-outline btn-sm"
+            >
+              + Pabrik PKS Baru
+            </button>
+          </div>
+        </div>
+
+        <div class="mitra-grid">
+          <section class="card" aria-labelledby="farmers-list-heading">
+            <div class="card-header-inline">
+              <h3 id="farmers-list-heading">Daftar Petani/Pemasok TBS</h3>
+              <span id="total-kasbon-badge" class="badge badge-loan"
+                >Total Piutang Kasbon: Rp 0</span
+              >
+            </div>
+            <div id="farmers-cards-list" class="partner-cards-grid"></div>
+          </section>
+
+          <section class="card" aria-labelledby="mills-list-heading">
+            <div class="card-header-inline">
+              <h3 id="mills-list-heading">Daftar Pabrik Kelapa Sawit (PKS)</h3>
+            </div>
+            <div id="mills-cards-list" class="partner-cards-grid"></div>
+          </section>
+        </div>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- VIEW 5: PENGATURAN RAM & BACKUP OFFLINE                             -->
+      <!-- =================================================================== -->
+      <section
+        id="view-setelan"
+        class="view-section"
+        aria-labelledby="view-setelan-heading"
+        hidden
+      >
+        <div class="section-heading-bar">
+          <div>
+            <h2 id="view-setelan-heading">
+              Pengaturan RAM & Cadangan Data Offline
+            </h2>
+            <p class="section-desc">
+              Sesuaikan identitas peron/RAM untuk struk timbangan, indikator
+              timbangan digital, aplikasi Android, dan kelola data lokal.
+            </p>
+          </div>
+        </div>
+
+        <!-- Pengaturan Panel Indikator Timbangan Digital & Menu Install Android -->
+        <section
+          class="card form-card"
+          aria-labelledby="scale-and-install-heading"
+        >
+          <fieldset class="form-fieldset">
+            <legend id="scale-and-install-heading">
+              Indikator Timbangan Digital & Aplikasi Android
+            </legend>
+
+            <fieldset class="radio-fieldset">
+              <legend>Tampilan Panel Indikator Timbangan Digital</legend>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" name="showScalePanel" value="true" />
+                  <span>Tampil (Aktifkan Panel Indikator)</span>
+                </label>
+                <label class="radio-option">
+                  <input
+                    type="radio"
+                    name="showScalePanel"
+                    value="false"
+                    checked
+                  />
+                  <span>Tidak Tampil (Sembunyikan)</span>
+                </label>
+              </div>
+            </fieldset>
+
+            <div id="scale-panel-settings-slot">
+              <!-- Digital Scale Indicator Panel -->
+              <section
+                id="scale-indicator-panel"
+                class="scale-panel card"
+                aria-labelledby="scale-panel-title"
+                hidden
+              >
+                <div class="scale-panel-header">
+                  <div class="scale-title-group">
+                    <h2 id="scale-panel-title" class="scale-title">
+                      INDIKATOR TIMBANGAN DIGITAL
+                    </h2>
+                  </div>
+                  <button
+                    type="button"
+                    id="btn-toggle-scale-sim"
+                    class="btn btn-ghost btn-sm"
+                    aria-expanded="true"
+                    aria-controls="scale-sim-controls"
+                  >
+                    Simulator/Bluetooth
+                  </button>
+                </div>
+
+                <div class="digital-display" aria-live="off">
+                  <div class="digital-flags">
+                    <span class="flag" id="bt-conn-flag">MODE MANUAL/SIM</span>
+                  </div>
+                  <div class="digital-readout-row">
+                    <output id="digital-weight-output" class="digital-digits"
+                      >0</output
+                    >
+                    <span class="digital-unit">KG</span>
+                  </div>
+                </div>
+
+                <div id="scale-sim-controls" class="scale-controls">
+                  <div class="scale-slider-row">
+                    <label for="scale-sim-slider" class="scale-slider-label"
+                      >Simulasi Beban Jembatan Timbang (0 - 15.000 kg):</label
+                    >
+                    <input
+                      type="range"
+                      id="scale-sim-slider"
+                      name="scale_sim"
+                      min="0"
+                      max="15000"
+                      step="10"
+                      value="0"
+                    />
+                  </div>
+                  <div class="scale-quick-buttons toolbar">
+                    <button
+                      type="button"
+                      class="btn btn-chip"
+                      data-sim-weight="0"
+                    >
+                      Reset Timbangan
+                    </button>
+                    <button
+                      type="button"
+                      id="btn-connect-bt-scale"
+                      class="btn btn-chip btn-chip-bt"
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        width="15"
+                        height="15"
+                        aria-hidden="true"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path d="M6.5 6.5l11 11L12 23V1l5.5 5.5-11 11" />
+                      </svg>
+                      <span>Bluetooth Timbangan</span>
+                    </button>
+                  </div>
+                  <div class="scale-capture-bar">
+                    <button
+                      type="button"
+                      id="btn-capture-bruto"
+                      class="btn btn-capture btn-capture-bruto"
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        width="18"
+                        height="18"
+                        aria-hidden="true"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path d="M12 5v14m0 0l-5-5m5 5l5-5" />
+                      </svg>
+                      <span>Ambil ke BRUTO</span>
+                    </button>
+                    <button
+                      type="button"
+                      id="btn-capture-tara"
+                      class="btn btn-capture btn-capture-tara"
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        width="18"
+                        height="18"
+                        aria-hidden="true"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path d="M12 19V5m0 0l-5 5m5-5l5 5" />
+                      </svg>
+                      <span>Ambil ke TARA</span>
+                    </button>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <div class="form-group">
+              <label for="install-app">Menu Install Aplikasi Android</label>
+              <p class="section-desc">
+                Pasang SawitScale Pro ke layar utama HP Android agar berjalan
+                penuh tanpa koneksi internet (Offline PWA).
+              </p>
+              <div class="toolbar">
+                <button id="install-app" type="button" class="btn btn-accent">
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="18"
+                    height="18"
+                    aria-hidden="true"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"
+                    />
+                  </svg>
+                  <span>Install Android</span>
+                </button>
+              </div>
+            </div>
+          </fieldset>
+        </section>
+
+        <form
+          id="form-settings"
+          action="#setelan"
+          method="POST"
+          aria-labelledby="view-setelan-heading"
+          class="card form-card"
+        >
+          <fieldset class="form-fieldset">
+            <legend>Identitas Peron / RAM Sawit (Tampil di Struk)</legend>
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="set-ram-name"
+                  >Nama Usaha RAM / Peron
+                  <span aria-hidden="true" class="req">*</span></label
+                >
+                <input type="text" id="set-ram-name" name="ramName" required />
+              </div>
+              <div class="form-group">
+                <label for="set-cashier">Nama Kasir/Penimbang</label>
+                <input type="text" id="set-cashier" name="cashierName" />
+              </div>
+            </div>
+            <div class="form-row-2">
+              <div class="form-group">
+                <label for="set-address">Alamat/Lokasi RAM</label>
+                <input type="text" id="set-address" name="address" />
+              </div>
+              <div class="form-group">
+                <label for="set-phone">Nomor HP/WhatsApp RAM</label>
+                <input
+                  type="tel"
+                  id="set-phone"
+                  name="phone"
+                  autocomplete="tel"
+                />
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="form-fieldset">
+            <legend>Standar Harga & Printer Thermal</legend>
+            <div class="form-row-3">
+              <div class="form-group">
+                <label for="set-default-buy-price"
+                  >Harga Beli TBS Harian (Rp/kg)</label
+                >
+                <input
+                  type="text"
+                  id="set-default-buy-price"
+                  name="defaultBuyPrice"
+                  inputmode="numeric"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="set-default-cut"
+                  >Potongan Sortasi Default (%)</label
+                >
+                <input
+                  type="text"
+                  id="set-default-cut"
+                  name="defaultCutPercent"
+                  inputmode="decimal"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="set-default-unloading"
+                  >Biaya Bongkar Default (Rp/kg)</label
+                >
+                <input
+                  type="text"
+                  id="set-default-unloading"
+                  name="defaultUnloadingRate"
+                  inputmode="numeric"
+                  required
+                />
+              </div>
+            </div>
+
+            <fieldset class="radio-fieldset">
+              <legend>Ukuran Kertas Printer Thermal Bluetooth</legend>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" name="paperWidth" value="58mm" checked />
+                  <span>58mm (Standar Mobile Printer)</span>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="paperWidth" value="80mm" />
+                  <span>80mm (Kasir Lebar)</span>
+                </label>
+              </div>
+            </fieldset>
+
+            <div class="bt-printer-box" aria-labelledby="bt-printer-heading">
+              <div class="card-header-inline">
+                <div>
+                  <h3 id="bt-printer-heading" class="bt-printer-title">
+                    Menu Pairing Printer Thermal Bluetooth (ESC/POS)
+                  </h3>
+                  <p id="bt-printer-device-info" class="section-desc">
+                    Hubungkan printer kasir Bluetooth 58mm/80mm (Eppos, VSC,
+                    Blueprint, Panda, Xprinter, dll) untuk cetak struk langsung.
+                  </p>
+                </div>
+                <span id="bt-printer-status-badge" class="badge badge-warning">
+                  Belum Terhubung
+                </span>
+              </div>
+
+              <div class="toolbar bt-printer-actions">
+                <button
+                  type="button"
+                  id="btn-pair-bt-printer"
+                  class="btn btn-primary btn-sm"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="17"
+                    height="17"
+                    aria-hidden="true"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M6.5 6.5l11 11L12 23V1l5.5 5.5-11 11" />
+                  </svg>
+                  <span id="btn-pair-bt-printer-text"
+                    >Cari & Pair Printer Bluetooth</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  id="btn-test-bt-printer"
+                  class="btn btn-secondary btn-sm"
+                >
+                  Tes Cetak Struk (Test Print)
+                </button>
+                <button
+                  type="button"
+                  id="btn-disconnect-bt-printer"
+                  class="btn btn-danger-outline btn-sm"
+                  hidden
+                >
+                  Putuskan Printer
+                </button>
+              </div>
+            </div>
+          </fieldset>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+              Simpan Pengaturan RAM
+            </button>
+          </div>
+        </form>
+
+        <!-- Pintasan ke Menu Pengaturan User (Khusus Superadmin) -->
+        <section
+          id="user-management-shortcut-card"
+          class="card form-card"
+          aria-labelledby="user-shortcut-heading"
+        >
+          <div class="card-header-inline">
+            <div>
+              <h3 id="user-shortcut-heading">
+                Menu Pengaturan User (Superadmin, Admin, Kasir)
+              </h3>
+              <p class="section-desc">
+                Kelola akun pengguna, edit profil & role, aktifkan/nonaktifkan
+                user, serta reset password.
+              </p>
+            </div>
+            <span class="role-pill role-superadmin">KHUSUS SUPERADMIN</span>
+          </div>
+          <div class="toolbar">
+            <button
+              type="button"
+              id="btn-goto-users-menu"
+              class="btn btn-primary"
+            >
+              Pengaturan User
+            </button>
+          </div>
+        </section>
+
+        <!-- Sinkronisasi Data Mobile APK & Desktop (Wi-Fi / LAN) -->
+        <section
+          id="sync-settings-card"
+          class="card form-card sync-card"
+          aria-labelledby="sync-settings-heading"
+        >
+          <div class="card-header-inline">
+            <div>
+              <h3 id="sync-settings-heading">
+                Sinkronisasi Data Mobile APK ↔ Desktop (Wi-Fi / LAN)
+              </h3>
+              <p class="section-desc">
+                Hubungkan aplikasi APK Android dengan komputer Desktop pada
+                jaringan Wi-Fi/Hotspot yang sama agar transaksi, antrean truk,
+                dan kasbon tersinkron otomatis.
+              </p>
+            </div>
+            <span id="sync-card-status-badge" class="badge badge-warning">
+              Memeriksa Server...
+            </span>
+          </div>
+
+          <div id="sync-lan-info-box" class="partner-info-banner" hidden>
+            <span>
+              Alamat Server Desktop (Wi-Fi):
+              <strong id="sync-lan-url-display">http://192.168.3.180:5173</strong>
+            </span>
+            <button
+              type="button"
+              id="btn-copy-lan-url"
+              class="btn btn-outline btn-sm"
+            >
+              Salin Alamat Server
+            </button>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="sync-server-url-input">
+                Alamat IP / URL Server Desktop (untuk Mobile APK)
+              </label>
+              <input
+                type="url"
+                id="sync-server-url-input"
+                name="syncServerUrl"
+                placeholder="Contoh: http://192.168.3.180:5173"
+                autocorrect="off"
+                autocapitalize="none"
+                spellcheck="false"
+              />
+              <span id="sync-last-time-hint" class="field-hint">
+                Belum pernah disinkronkan pada sesi ini.
+              </span>
+            </div>
+
+            <fieldset class="radio-fieldset">
+              <legend>Sinkronisasi Otomatis (Real-Time)</legend>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input
+                    type="radio"
+                    name="syncAutoMode"
+                    value="true"
+                    checked
+                  />
+                  <span>Otomatis (Aktif)</span>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="syncAutoMode" value="false" />
+                  <span>Manual Saja</span>
+                </label>
+              </div>
+            </fieldset>
+          </div>
+
+          <div class="backup-actions toolbar">
+            <button
+              type="button"
+              id="btn-sync-merge-settings"
+              class="btn btn-primary"
+            >
+              Sinkronkan Sekarang (Gabung 2 Arah)
+            </button>
+            <button
+              type="button"
+              id="btn-sync-pull-settings"
+              class="btn btn-secondary"
+            >
+              Ambil Data dari Desktop (Pull)
+            </button>
+            <button
+              type="button"
+              id="btn-sync-push-settings"
+              class="btn btn-outline"
+            >
+              Kirim & Timpa ke Desktop (Push)
+            </button>
+          </div>
+
+          <div class="bt-printer-box" aria-labelledby="bt-sync-settings-title">
+            <div class="card-header-inline">
+              <div>
+                <h4 id="bt-sync-settings-title" class="bt-printer-title">
+                  Sinkronisasi HP ↔ PC via Bluetooth (Tanpa Wi-Fi / Offline)
+                </h4>
+                <p class="section-desc">
+                  Transfer dan gabungkan data transaksi antara HP Android dan PC
+                  menggunakan koneksi Bluetooth langsung (Serial/RFCOMM atau
+                  Kirim/Terima File Bluetooth).
+                </p>
+              </div>
+              <span class="badge badge-stable">Bluetooth Sync</span>
+            </div>
+
+            <div class="backup-actions toolbar">
+              <button
+                type="button"
+                id="btn-bt-sync-direct-settings"
+                class="btn btn-chip-bt btn-sm"
+              >
+                Sinkron Langsung Bluetooth (HP ↔ PC)
+              </button>
+              <button
+                type="button"
+                id="btn-bt-send-file-settings"
+                class="btn btn-primary btn-sm"
+              >
+                Kirim Data via Bluetooth ke PC/HP
+              </button>
+              <button
+                type="button"
+                id="btn-bt-open-pc-receiver-settings"
+                class="btn btn-secondary btn-sm"
+              >
+                1. Buka Penerima Bluetooth PC (Windows)
+              </button>
+              <label
+                for="input-bt-merge-settings"
+                class="btn btn-outline btn-sm file-label-btn"
+              >
+                2. Gabung File Bluetooth Masuk (.JSON)
+                <input
+                  type="file"
+                  id="input-bt-merge-settings"
+                  accept=".json,application/json"
+                  class="visually-hidden"
+                />
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <section class="card backup-card" aria-labelledby="backup-heading">
+          <h3 id="backup-heading">
+            Manajemen Database Offline (Backup & Restore)
+          </h3>
+          <p class="section-desc">
+            Semua data tersimpan secara aman di memori internal perangkat
+            Android Anda (tanpa perlu kuota internet). Lakukan backup berkala ke
+            file JSON.
+          </p>
+          <div class="backup-actions toolbar">
+            <button
+              type="button"
+              id="btn-backup-json"
+              class="btn btn-secondary"
+            >
+              Download Backup Data (.JSON)
+            </button>
+            <label
+              for="input-restore-json"
+              class="btn btn-outline file-label-btn"
+            >
+              Restore Data dari File (.JSON)
+              <input
+                type="file"
+                id="input-restore-json"
+                accept=".json,application/json"
+                class="visually-hidden"
+              />
+            </label>
+            <button
+              type="button"
+              id="btn-reset-demo-data"
+              class="btn btn-ghost"
+            >
+              Muat Ulang Data Contoh
+            </button>
+            <button
+              type="button"
+              id="btn-clear-all-data"
+              class="btn btn-danger-outline"
+            >
+              Hapus Semua Transaksi
+            </button>
+          </div>
+        </section>
+      </section>
+
+      <!-- =================================================================== -->
+      <!-- VIEW 6: MENU PENGATURAN USER (KHUSUS SUPERADMIN)                    -->
+      <!-- =================================================================== -->
+      <section
+        id="view-users"
+        class="view-section"
+        aria-labelledby="view-users-heading"
+        hidden
+      >
+        <div class="section-heading-bar">
+          <div>
+            <h2 id="view-users-heading">
+              Pengaturan User — Superadmin, Admin & Kasir
+            </h2>
+            <p class="section-desc">
+              Tambah user baru, edit data & hak akses, atur status Aktif / Tidak
+              Aktif, dan reset password login.
+            </p>
+          </div>
+          <span class="role-pill role-superadmin">KHUSUS SUPERADMIN</span>
+        </div>
+
+        <section
+          id="user-management-card"
+          class="card form-card"
+          aria-labelledby="users-list-heading"
+        >
+          <div class="card-header-inline">
+            <h3 id="users-list-heading">Daftar Akun User Terdaftar</h3>
+            <span id="users-count-badge" class="badge badge-stable"
+              >3 User</span
+            >
+          </div>
+
+          <ul id="users-list-container" class="users-list"></ul>
+        </section>
+
+        <form
+          id="form-add-user"
+          action="#add-user"
+          method="POST"
+          aria-labelledby="add-user-legend"
+          class="card form-card"
+        >
+          <fieldset class="form-fieldset">
+            <legend id="add-user-legend">Tambah Akun User Baru</legend>
+            <div class="form-row-3">
+              <div class="form-group">
+                <label for="new-user-fullname"
+                  >Nama Lengkap User
+                  <span aria-hidden="true" class="req">*</span></label
+                >
+                <input
+                  type="text"
+                  id="new-user-fullname"
+                  name="fullName"
+                  autocomplete="name"
+                  required
+                  placeholder="Contoh: Andi Saputra"
+                />
+              </div>
+              <div class="form-group">
+                <label for="new-user-username"
+                  >Username Login
+                  <span aria-hidden="true" class="req">*</span></label
+                >
+                <input
+                  type="text"
+                  id="new-user-username"
+                  name="username"
+                  autocomplete="off"
+                  autocorrect="off"
+                  autocapitalize="none"
+                  spellcheck="false"
+                  required
+                  placeholder="Contoh: kasir2"
+                />
+              </div>
+              <div class="form-group">
+                <label for="new-user-password"
+                  >Password Awal
+                  <span aria-hidden="true" class="req">*</span></label
+                >
+                <input
+                  type="text"
+                  id="new-user-password"
+                  name="password"
+                  autocomplete="new-password"
+                  autocorrect="off"
+                  autocapitalize="none"
+                  spellcheck="false"
+                  required
+                  placeholder="Contoh: 123456"
+                />
+              </div>
+            </div>
+
+            <div class="form-row-2">
+              <fieldset class="radio-fieldset">
+                <legend>Pilih Role / Hak Akses</legend>
+                <div class="radio-group">
+                  <label class="radio-option">
+                    <input type="radio" name="userRole" value="kasir" checked />
+                    <span>Kasir</span>
+                  </label>
+                  <label class="radio-option">
+                    <input type="radio" name="userRole" value="admin" />
+                    <span>Admin</span>
+                  </label>
+                  <label class="radio-option">
+                    <input type="radio" name="userRole" value="superadmin" />
+                    <span>Superadmin</span>
+                  </label>
+                </div>
+              </fieldset>
+
+              <fieldset class="radio-fieldset">
+                <legend>Status Akun</legend>
+                <div class="radio-group">
+                  <label class="radio-option">
+                    <input
+                      type="radio"
+                      name="userActive"
+                      value="true"
+                      checked
+                    />
+                    <span>Aktif (Bisa Login)</span>
+                  </label>
+                  <label class="radio-option">
+                    <input type="radio" name="userActive" value="false" />
+                    <span>Tidak Aktif (Nonaktif)</span>
+                  </label>
+                </div>
+              </fieldset>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">
+                + Tambah User Baru
+              </button>
+            </div>
+          </fieldset>
+        </form>
+      </section>
+    </main>
+
+    <!-- ===================================================================== -->
+    <!-- BOTTOM NAVIGATION BAR (MOBILE-FIRST ANDROID ERGONOMICS)               -->
+    <!-- ===================================================================== -->
+    <nav
+      id="bottom-nav"
+      class="bottom-bar no-print"
+      aria-label="Menu Utama Aplikasi"
+      hidden
+    >
+      <button
+        type="button"
+        class="nav-item active"
+        data-target="view-beli"
+        aria-current="page"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          width="22"
+          height="22"
+          aria-hidden="true"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"
+          />
+        </svg>
+        <span>Timbang Beli</span>
+      </button>
+      <button type="button" class="nav-item" data-target="view-jual">
+        <svg
+          viewBox="0 0 24 24"
+          width="22"
+          height="22"
+          aria-hidden="true"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            d="M12 19V7m0 0l-4 4m4-4l4 4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"
+          />
+        </svg>
+        <span>Timbang Jual</span>
+      </button>
+      <button type="button" class="nav-item" data-target="view-laporan">
+        <svg
+          viewBox="0 0 24 24"
+          width="22"
+          height="22"
+          aria-hidden="true"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M18 20V10M12 20V4M6 20v-6" />
+        </svg>
+        <span>Laporan</span>
+      </button>
+      <button type="button" class="nav-item" data-target="view-mitra">
+        <svg
+          viewBox="0 0 24 24"
+          width="22"
+          height="22"
+          aria-hidden="true"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zm14 10v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"
+          />
+        </svg>
+        <span>Mitra & Kasbon</span>
+      </button>
+      <button
+        type="button"
+        id="nav-item-users"
+        class="nav-item"
+        data-target="view-users"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          width="22"
+          height="22"
+          aria-hidden="true"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M8.5 11a4 4 0 100-8 4 4 0 000 8zM20 8v6M23 11h-6"
+          />
+        </svg>
+        <span>Pengaturan User</span>
+      </button>
+    </nav>
+
+    <!-- ===================================================================== -->
+    <!-- DIALOG 1: CETAK STRUK THERMAL / SHARE WHATSAPP                        -->
+    <!-- ===================================================================== -->
+    <dialog
+      id="receipt-dialog"
+      aria-labelledby="receipt-dialog-title"
+      closedby="any"
+      class="app-dialog"
+    >
+      <div class="dialog-header no-print">
+        <h2 id="receipt-dialog-title">Struk Timbangan TBS</h2>
+        <form method="dialog">
+          <button
+            type="submit"
+            value="close"
+            class="btn-icon"
+            aria-label="Tutup Struk"
+            autofocus
+          >
+            ✕
+          </button>
+        </form>
+      </div>
+
+      <div
+        id="receipt-history-selector-bar"
+        class="bt-receipt-bar receipt-history-bar no-print"
+        hidden
+      >
+        <label for="receipt-history-select" class="receipt-history-label">
+          Pilih Tiket Struk Petani:
+        </label>
+        <select
+          id="receipt-history-select"
+          name="receiptHistoryTicket"
+          class="receipt-history-select"
+        ></select>
+      </div>
+
+      <div id="thermal-receipt-paper" class="thermal-paper paper-58mm">
+        <!-- Dynamically populated receipt content -->
+      </div>
+
+      <div class="bt-receipt-bar no-print">
+        <span id="receipt-bt-status-text" class="text-muted">
+          Printer Bluetooth: Belum Terhubung
+        </span>
+        <button
+          type="button"
+          id="btn-receipt-pair-bt"
+          class="btn btn-outline btn-sm"
+        >
+          Pair Printer BT
+        </button>
+      </div>
+
+      <div class="dialog-actions no-print">
+        <button type="button" id="btn-print-thermal" class="btn btn-primary">
+          Cetak Printer Thermal
+        </button>
+        <button type="button" id="btn-share-wa" class="btn btn-whatsapp">
+          Kirim ke WA
+        </button>
+        <button type="button" id="btn-copy-receipt" class="btn btn-outline">
+          Salin Teks Nota
+        </button>
+        <form method="dialog">
+          <button type="submit" value="cancel" class="btn btn-ghost">
+            Tutup
+          </button>
+        </form>
+      </div>
+    </dialog>
+
+    <!-- ===================================================================== -->
+    <!-- DIALOG 2: TAMBAH PETANI/PEMASOK BARU                                -->
+    <!-- ===================================================================== -->
+    <dialog
+      id="farmer-dialog"
+      aria-labelledby="farmer-dialog-title"
+      closedby="closerequest"
+      class="app-dialog"
+    >
+      <div class="dialog-header">
+        <h2 id="farmer-dialog-title">Tambah Petani/Pemasok TBS</h2>
+        <form method="dialog">
+          <button
+            type="submit"
+            value="cancel"
+            class="btn-icon"
+            aria-label="Tutup"
+          >
+            ✕
+          </button>
+        </form>
+      </div>
+      <form
+        id="form-add-farmer"
+        action="#add-farmer"
+        method="POST"
+        class="dialog-form"
+      >
+        <input type="hidden" id="edit-farmer-id" name="farmerId" value="" />
+        <div class="form-group">
+          <label for="new-farmer-name"
+            >Nama Lengkap Petani/Kelompok
+            <span aria-hidden="true" class="req">*</span></label
+          >
+          <input
+            type="text"
+            id="new-farmer-name"
+            name="name"
+            required
+            placeholder="Contoh: H. Syamsul Bahri"
+            autofocus
+          />
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="new-farmer-phone">No. HP / WhatsApp</label>
+            <input
+              type="tel"
+              id="new-farmer-phone"
+              name="phone"
+              placeholder="0812xxxx"
+              autocomplete="tel"
+            />
+          </div>
+          <div class="form-group">
+            <label for="new-farmer-plate">Plat Kendaraan Langganan</label>
+            <input
+              type="text"
+              id="new-farmer-plate"
+              name="defaultPlate"
+              placeholder="BM 8129 QA"
+              autocorrect="off"
+              autocapitalize="characters"
+            />
+          </div>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="new-farmer-price"
+              >Harga Spesial (Rp/kg, opsional)</label
+            >
+            <input
+              type="text"
+              id="new-farmer-price"
+              name="specialPrice"
+              inputmode="numeric"
+              placeholder="Kosong = Harga Harian"
+            />
+          </div>
+          <div class="form-group">
+            <label for="new-farmer-loan">Saldo Kasbon Awal (Rp)</label>
+            <input
+              type="text"
+              id="new-farmer-loan"
+              name="initialLoan"
+              inputmode="numeric"
+              value="0"
+            />
+          </div>
+        </div>
+        <div class="dialog-actions">
+          <button type="submit" class="btn btn-primary">
+            Simpan Data Petani
+          </button>
+          <button type="button" id="btn-cancel-farmer" class="btn btn-ghost">
+            Batal
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- ===================================================================== -->
+    <!-- DIALOG 3: TAMBAH PABRIK KELAPA SAWIT (PKS)                            -->
+    <!-- ===================================================================== -->
+    <dialog
+      id="mill-dialog"
+      aria-labelledby="mill-dialog-title"
+      closedby="closerequest"
+      class="app-dialog"
+    >
+      <div class="dialog-header">
+        <h2 id="mill-dialog-title">Tambah Pabrik Kelapa Sawit (PKS)</h2>
+        <form method="dialog">
+          <button
+            type="submit"
+            value="cancel"
+            class="btn-icon"
+            aria-label="Tutup"
+          >
+            ✕
+          </button>
+        </form>
+      </div>
+      <form
+        id="form-add-mill"
+        action="#add-mill"
+        method="POST"
+        class="dialog-form"
+      >
+        <div class="form-group">
+          <label for="new-mill-name"
+            >Nama Pabrik / PKS
+            <span aria-hidden="true" class="req">*</span></label
+          >
+          <input
+            type="text"
+            id="new-mill-name"
+            name="name"
+            required
+            placeholder="Contoh: PT. Agro Sawit Nusantara"
+            autofocus
+          />
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="new-mill-code">Kode Kontrak / DO</label>
+            <input
+              type="text"
+              id="new-mill-code"
+              name="doPrefix"
+              placeholder="DO-ASN"
+              autocorrect="off"
+            />
+          </div>
+          <div class="form-group">
+            <label for="new-mill-price"
+              >Harga DO Saat Ini (Rp/kg)
+              <span aria-hidden="true" class="req">*</span></label
+            >
+            <input
+              type="text"
+              id="new-mill-price"
+              name="price"
+              inputmode="numeric"
+              required
+              placeholder="2950"
+            />
+          </div>
+        </div>
+        <div class="dialog-actions">
+          <button type="submit" class="btn btn-primary">Simpan Data PKS</button>
+          <button type="button" id="btn-cancel-mill" class="btn btn-ghost">
+            Batal
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- ===================================================================== -->
+    <!-- DIALOG 4: CATAT PINJAMAN KASBON/BAYAR KASBON PETANI                 -->
+    <!-- ===================================================================== -->
+    <dialog
+      id="loan-dialog"
+      aria-labelledby="loan-dialog-title"
+      closedby="closerequest"
+      class="app-dialog"
+    >
+      <div class="dialog-header">
+        <h2 id="loan-dialog-title">
+          Catat Kasbon / Pembayaran Pinjaman Petani
+        </h2>
+        <form method="dialog">
+          <button
+            type="submit"
+            value="cancel"
+            class="btn-icon"
+            aria-label="Tutup"
+          >
+            ✕
+          </button>
+        </form>
+      </div>
+      <form
+        id="form-loan-mutation"
+        action="#loan-mutation"
+        method="POST"
+        class="dialog-form"
+      >
+        <div class="form-group">
+          <label for="loan-farmer-select"
+            >Pilih Petani <span aria-hidden="true" class="req">*</span></label
+          >
+          <select
+            id="loan-farmer-select"
+            name="farmerId"
+            required
+            autofocus
+          ></select>
+        </div>
+        <fieldset class="radio-fieldset">
+          <legend>Jenis Transaksi Kasbon</legend>
+          <div class="radio-group">
+            <label class="radio-option">
+              <input type="radio" name="loanType" value="ADD" checked />
+              <span>Tambah Pinjaman (Ambil Kasbon)</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="loanType" value="PAY" />
+              <span>Bayar / Cicil Kasbon Tunai</span>
+            </label>
+          </div>
+        </fieldset>
+        <div class="form-group">
+          <label for="loan-amount-input"
+            >Nominal (Rp) <span aria-hidden="true" class="req">*</span></label
+          >
+          <input
+            type="text"
+            id="loan-amount-input"
+            name="amount"
+            inputmode="numeric"
+            required
+            placeholder="500000"
+          />
+        </div>
+        <div class="form-group">
+          <label for="loan-note-input">Keterangan</label>
+          <input
+            type="text"
+            id="loan-note-input"
+            name="note"
+            placeholder="Contoh: Pinjam beli pupuk NPK"
+          />
+        </div>
+        <div class="dialog-actions">
+          <button type="submit" class="btn btn-primary">
+            Simpan Mutasi Kasbon
+          </button>
+          <button type="button" id="btn-cancel-loan" class="btn btn-ghost">
+            Batal
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- ===================================================================== -->
+    <!-- DIALOG 5: EDIT AKUN USER (KHUSUS SUPERADMIN)                          -->
+    <!-- ===================================================================== -->
+    <dialog
+      id="edit-user-dialog"
+      aria-labelledby="edit-user-dialog-title"
+      closedby="closerequest"
+      class="app-dialog"
+    >
+      <div class="dialog-header">
+        <h2 id="edit-user-dialog-title">Edit Akun User</h2>
+        <form method="dialog">
+          <button
+            type="submit"
+            value="cancel"
+            class="btn-icon"
+            aria-label="Tutup"
+          >
+            ✕
+          </button>
+        </form>
+      </div>
+      <form
+        id="form-edit-user"
+        action="#edit-user"
+        method="POST"
+        class="dialog-form"
+      >
+        <input type="hidden" id="edit-user-id" name="userId" />
+
+        <div class="form-group">
+          <label for="edit-user-fullname"
+            >Nama Lengkap User
+            <span aria-hidden="true" class="req">*</span></label
+          >
+          <input
+            type="text"
+            id="edit-user-fullname"
+            name="fullName"
+            autocomplete="name"
+            required
+            autofocus
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="edit-user-username"
+            >Username Login <span aria-hidden="true" class="req">*</span></label
+          >
+          <input
+            type="text"
+            id="edit-user-username"
+            name="username"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="none"
+            spellcheck="false"
+            required
+          />
+        </div>
+
+        <fieldset class="radio-fieldset">
+          <legend>Role / Hak Akses</legend>
+          <div class="radio-group">
+            <label class="radio-option">
+              <input type="radio" name="editUserRole" value="kasir" />
+              <span>Kasir</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="editUserRole" value="admin" />
+              <span>Admin</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="editUserRole" value="superadmin" />
+              <span>Superadmin</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset class="radio-fieldset">
+          <legend>Status Akun User</legend>
+          <div class="radio-group">
+            <label class="radio-option">
+              <input type="radio" name="editUserActive" value="true" checked />
+              <span>Aktif (Dapat Login)</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="editUserActive" value="false" />
+              <span>Tidak Aktif (Dinonaktifkan)</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="dialog-actions">
+          <button type="submit" class="btn btn-primary">
+            Simpan Perubahan User
+          </button>
+          <button type="button" id="btn-cancel-edit-user" class="btn btn-ghost">
+            Batal
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- ===================================================================== -->
+    <!-- DIALOG 6: RESET PASSWORD USER (KHUSUS SUPERADMIN)                     -->
+    <!-- ===================================================================== -->
+    <dialog
+      id="reset-password-dialog"
+      aria-labelledby="reset-password-dialog-title"
+      closedby="closerequest"
+      class="app-dialog"
+    >
+      <div class="dialog-header">
+        <h2 id="reset-password-dialog-title">Reset Password User</h2>
+        <form method="dialog">
+          <button
+            type="submit"
+            value="cancel"
+            class="btn-icon"
+            aria-label="Tutup"
+          >
+            ✕
+          </button>
+        </form>
+      </div>
+      <form
+        id="form-reset-password"
+        action="#reset-password"
+        method="POST"
+        class="dialog-form"
+      >
+        <input type="hidden" id="reset-password-user-id" name="userId" />
+
+        <p id="reset-password-target-label" class="section-desc"></p>
+
+        <div class="form-group">
+          <div class="label-with-action">
+            <label for="reset-password-new"
+              >Password Baru
+              <span aria-hidden="true" class="req">*</span></label
+            >
+            <button type="button" id="btn-fill-default-pass" class="btn-link">
+              Isi Default (123456)
+            </button>
+          </div>
+          <input
+            type="text"
+            id="reset-password-new"
+            name="newPassword"
+            autocomplete="new-password"
+            autocorrect="off"
+            autocapitalize="none"
+            spellcheck="false"
+            required
+            placeholder="Masukkan password baru"
+            autofocus
+          />
+        </div>
+
+        <div class="dialog-actions">
+          <button type="submit" class="btn btn-primary">
+            Simpan Password Baru
+          </button>
+          <button
+            type="button"
+            id="btn-cancel-reset-password"
+            class="btn btn-ghost"
+          >
+            Batal
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- ===================================================================== -->
+    <!-- DIALOG 7: PILIH PRINTER BLUETOOTH THERMAL (NATIVE ANDROID APK)        -->
+    <!-- ===================================================================== -->
+    <dialog
+      id="bt-printer-dialog"
+      aria-labelledby="bt-printer-dialog-title"
+      closedby="any"
+      class="app-dialog"
+    >
+      <div class="dialog-header">
+        <h2 id="bt-printer-dialog-title">Pilih Printer Bluetooth</h2>
+        <form method="dialog">
+          <button
+            type="submit"
+            value="close"
+            class="btn-icon"
+            aria-label="Tutup"
+            autofocus
+          >
+            ✕
+          </button>
+        </form>
+      </div>
+      <p id="bt-printer-dialog-hint" class="section-desc">
+        Pilih printer thermal Bluetooth yang sudah di-pair di HP Android Anda.
+        Jika printer belum muncul, klik <strong>Buka Bluetooth HP</strong> untuk
+        pair terlebih dahulu.
+      </p>
+      <ul id="bt-paired-list" class="users-list"></ul>
+      <div class="dialog-actions">
+        <button
+          type="button"
+          id="btn-refresh-bt-list"
+          class="btn btn-secondary btn-sm"
+        >
+          Muat Ulang Daftar
+        </button>
+        <button
+          type="button"
+          id="btn-open-android-bt-settings"
+          class="btn btn-outline btn-sm"
+        >
+          Buka Bluetooth HP (Pair Baru)
+        </button>
+        <form method="dialog">
+          <button type="submit" value="cancel" class="btn btn-ghost btn-sm">
+            Tutup
+          </button>
+        </form>
+      </div>
+    </dialog>
+
+    <!-- ===================================================================== -->
+    <!-- DIALOG 8: SINKRONISASI DATA MOBILE APK <-> DESKTOP                    -->
+    <!-- ===================================================================== -->
+    <dialog
+      id="sync-dialog"
+      aria-labelledby="sync-dialog-title"
+      closedby="any"
+      class="app-dialog"
+    >
+      <div class="dialog-header">
+        <h2 id="sync-dialog-title">Sinkronisasi Mobile APK ↔ Desktop</h2>
+        <form method="dialog">
+          <button
+            type="submit"
+            value="close"
+            class="btn-icon"
+            aria-label="Tutup"
+            autofocus
+          >
+            ✕
+          </button>
+        </form>
+      </div>
+
+      <div class="sync-dialog-body">
+        <div class="partner-info-banner">
+          <span>Status Koneksi:</span>
+          <span id="sync-modal-status-badge" class="badge badge-warning">
+            Memeriksa...
+          </span>
+        </div>
+
+        <div id="sync-modal-lan-box" class="bt-receipt-bar" hidden>
+          <div>
+            <div class="field-hint">Buka/ketik alamat ini di APK Android (Wi-Fi sama):</div>
+            <strong id="sync-modal-lan-url">http://192.168.3.180:5173</strong>
+          </div>
+          <button
+            type="button"
+            id="btn-modal-copy-lan"
+            class="btn btn-outline btn-sm"
+          >
+            Salin URL
+          </button>
+        </div>
+
+        <div class="form-group">
+          <label for="sync-modal-url-input">
+            Alamat Server Desktop (IP Wi-Fi / LAN)
+          </label>
+          <input
+            type="url"
+            id="sync-modal-url-input"
+            placeholder="Contoh: http://192.168.3.180:5173"
+            autocorrect="off"
+            autocapitalize="none"
+            spellcheck="false"
+          />
+          <span id="sync-modal-last-hint" class="field-hint">
+            Pastikan HP Android dan Desktop terhubung ke Wi-Fi / Hotspot yang sama.
+          </span>
+        </div>
+
+        <div class="form-actions">
+          <button
+            type="button"
+            id="btn-sync-merge-modal"
+            class="btn btn-primary btn-lg"
+          >
+            Sinkronkan Sekarang (Gabung 2 Arah)
+          </button>
+          <div class="form-actions-secondary">
+            <button
+              type="button"
+              id="btn-sync-pull-modal"
+              class="btn btn-secondary btn-sm"
+            >
+              Ambil dari Desktop (Pull)
+            </button>
+            <button
+              type="button"
+              id="btn-sync-push-modal"
+              class="btn btn-outline btn-sm"
+            >
+              Kirim ke Desktop (Push)
+            </button>
+          </div>
+        </div>
+
+        <div class="bt-printer-box" aria-labelledby="bt-sync-modal-heading">
+          <div>
+            <h3 id="bt-sync-modal-heading" class="bt-printer-title">
+              Sinkronisasi via Bluetooth (HP ↔ PC)
+            </h3>
+            <p class="field-hint" style="margin: 0;">
+              Gunakan jika tanpa Wi-Fi: kirim/hubungkan Bluetooth dari HP ke PC,
+              lalu gabungkan otomatis 2 arah.
+            </p>
+          </div>
+          <div class="form-actions">
+            <button
+              type="button"
+              id="btn-bt-sync-direct-modal"
+              class="btn btn-chip-bt btn-sm"
+            >
+              Hubungkan & Sinkron Bluetooth Langsung (HP ↔ PC)
+            </button>
+            <button
+              type="button"
+              id="btn-bt-send-file-modal"
+              class="btn btn-primary btn-sm"
+            >
+              Kirim Data dari HP ke PC via Bluetooth
+            </button>
+            <div class="form-actions-secondary">
+              <button
+                type="button"
+                id="btn-bt-open-pc-receiver-modal"
+                class="btn btn-secondary btn-sm"
+              >
+                1. Terima Bluetooth di PC
+              </button>
+              <label
+                for="input-bt-merge-modal"
+                class="btn btn-outline btn-sm file-label-btn"
+              >
+                2. Gabung File Bluetooth
+                <input
+                  type="file"
+                  id="input-bt-merge-modal"
+                  accept=".json,application/json"
+                  class="visually-hidden"
+                />
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dialog-actions">
+        <form method="dialog">
+          <button type="submit" value="cancel" class="btn btn-ghost btn-sm">
+            Tutup
+          </button>
+        </form>
+      </div>
+    </dialog>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "appId": "id.sawitscale.pro",
+  "appName": "TBSscale Pro",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https",
+    "cleartext": true
+  }
+}
